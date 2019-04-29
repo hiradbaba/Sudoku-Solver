@@ -2,11 +2,11 @@ from time import time
 class SodukuSolver:
     def __init__(self,dim,fileDir):
         self.dim = dim
-        self.expandedNodes = 0 
+        self.expandedNodes = 0
         with open(fileDir) as f:
 	        content = f.readlines()
-	        self.board = [list(x.strip()) for x in content]  
-    
+	        self.board = [list(x.strip()) for x in content]
+
     def __str__(self):
         string = ''
         for row in self.board:
@@ -21,14 +21,14 @@ class SodukuSolver:
         for i in range(self.dim):
             if self.board[row][i] == choiceStr or self.board[i][col] ==choiceStr:
                 return False
-        
+
         boxR = row - (row % 3)
         boxV = col - (col % 3)
         for i in range(3):
             for j in range(3):
                 if self.board[boxR + i][boxV + j] == choiceStr:
                     return False
-        return True 
+        return True
 
     def getNextLocation(self):
         for i in range(self.dim):
@@ -51,7 +51,7 @@ class SodukuSolver:
                     count+=1
             if minRowCount > count:
                 minRowCount = count
-                minRow = self.board[i] 
+                minRow = self.board[i]
                 rowIndex = i
         if minRow == []:
             return (-1,-1)
@@ -59,8 +59,6 @@ class SodukuSolver:
             if minRow[i] == '0':
                 colIndex = i
                 break
-        # print(minRow,end=' ')
-        # print(minRowCount)
         return (rowIndex,colIndex)
 
     def getNextMRVRowCol(self):
@@ -77,7 +75,7 @@ class SodukuSolver:
                     count+=1
             if minRowCount > count:
                 minRowCount = count
-                minRow = self.board[i] 
+                minRow = self.board[i]
                 rowIndex = i
         if minRow == []:
             return (-1,-1)
@@ -109,7 +107,7 @@ class SodukuSolver:
                     count+=1
             if maxRowCount < count:
                 maxRowCount = count
-                maxRow = self.board[i] 
+                maxRow = self.board[i]
                 rowIndex = i
         if maxRow == []:
             return (-1,-1)
@@ -132,7 +130,7 @@ class SodukuSolver:
             if value in lst:
                 lst.remove(value)
         for i in range(self.dim):
-            if value in RV[i*9+col]: 
+            if value in RV[i*9+col]:
                 RV[i*9+col].remove(value)
         boxRow = int(row/3)
         boxCol = int(col/3)
@@ -141,17 +139,17 @@ class SodukuSolver:
                 if value in RV[(boxRow*3+i)*9 + j + boxCol*3]:
                     RV[(boxRow*3+i)*9 + j + boxCol*3].remove(value)
 
-        # 
+        #
         RV[row*9 + col] = [value]
         return RV
-    
+
     def getDomain(self,row,col):
         RVCell = [str(i) for i in range(1 ,self.dim + 1)]
         for i in range(self.dim):
             if self.board[row][i] != '0':
                 if self.board[row][i] in RVCell:
                     RVCell.remove(self.board[row][i])
-        
+
         for i in range(self.dim):
             if self.board[i][col] != '0':
                 if self.board[i][col] in RVCell:
@@ -167,14 +165,11 @@ class SodukuSolver:
         return RVCell
 
     def getRemainingValues(self):
-        # RVCell = [str(i) for i in range(1 ,self.dim + 1)]
-        # RV = [ RVCell for i in range(self.dim*self.dim)] #remaining values
         RV=[]
         for row in range(self.dim):
             for col in range(self.dim):
                 if self.board[row][col] != '0':
                     digit = self.board[row][col]
-                    # RV = self.removeValue(row,col,digit,RV)
                     RV.append([digit])
                 else:
                     RV.append(self.getDomain(row,col))
@@ -187,7 +182,7 @@ class SodukuSolver:
             for j in range(self.dim):
                 c += self.board[j].count(lst[i])
             count[i] = c
-        
+
         return lst[count.index(min(count))]
 
     def isConsistent(self,row,col,value,rv):
@@ -198,7 +193,6 @@ class SodukuSolver:
             for col in range(self.dim):
                 if self.board[row][col] != '0':
                     digit = board[row][col]
-                    # RV = self.removeValue(row,col,digit,RV)
                     RV.append([digit])
                 else:
                     RVCell = [str(i) for i in range(1 ,self.dim + 1)]
@@ -206,7 +200,7 @@ class SodukuSolver:
                         if board[row][i] != '0':
                             if board[row][i] in RVCell:
                                 RVCell.remove(board[row][i])
-                    
+
                     for i in range(self.dim):
                         if board[i][col] != '0':
                             if board[i][col] in RVCell:
@@ -222,7 +216,7 @@ class SodukuSolver:
                     if RVCell == []:
                         return False
         return True
-    '''Solving methods'''    
+    '''Solving methods'''
     def solveSimpleBackTracking(self):
         location = self.getNextLocation()
         if location[0] == -1:
@@ -239,7 +233,7 @@ class SodukuSolver:
 
     def solveCSP(self,locationFunction):
         location = locationFunction()
-        
+
         if location[0] == -1:
             return True
         else:
@@ -284,9 +278,3 @@ s.solveCSPFH()
 end = time()
 print(s)
 print("Time Elapsed:{}".format(end-start))
-        
-        
-
-    
-            
-                
